@@ -18,9 +18,7 @@ Yield curves are smooth, persistent time series. A natural question is whether m
   Early period uses **Nelson–Siegel** parameters; later period uses **Svensson**.
 - **Unification:** For *every day* we **re-fit Nelson–Siegel (NS)** to the observed curve and rebuild a **30×1–30y** panel of yields:
   
-  $ y_t(\tau) \approx \beta_{1,t} 
-  \;+\; \beta_{2,t}\,\frac{1-e^{-\lambda \tau}}{\lambda \tau}
-  \;+\; \beta_{3,t}\Big(\frac{1-e^{-\lambda \tau}}{\lambda \tau} - e^{-\lambda \tau}\Big). $
+  $ y_t(\tau) \approx \beta_{1,t}   \;+\; \beta_{2,t}\,\frac{1-e^{-\lambda \tau}}{\lambda \tau}   \;+\; \beta_{3,t}\Big(\frac{1-e^{-\lambda \tau}}{\lambda \tau} - e^{-\lambda \tau}\Big). $
   
   This yields a consistent daily panel $Y_t \in \mathbb{R}^{30}$ for maturities $\tau \in \{1,\dots,30\}$ years.
 
