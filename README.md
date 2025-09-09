@@ -116,69 +116,10 @@ Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ t
 </div>
 
 
-- **Table B. Diebold–Mariano tests (selected pairs)** — DM statistic, p-value, sample size $N$.  
-  Pairs included: each model vs **RW**, plus **DNS-diff vs AE+VAR**, **LSTM vs AE+VAR**, **AE+LSTM vs LSTM**.  
-  (insert CSV/Markdown rendered from outputs/tables/dm_tests_summary.csv)
-
 ---
 
-## Reproducibility & configuration
+## TLDR
 
-- **Configuration files:**
-  - `configs/base.yaml` — seeds, horizons, window (seq_len), mat_grid spec, etc.  
-    Also supports loading per-maturity plotting weights if needed.
-  - `configs/model/dns_diff.yaml` — horizon-specific best DNS hyperparameters (λ, window, VAR order).
-
-- **Saved predictions (per horizon):**
-    data/processed/predictions/<br>
-      dns_diff/    dns_diff_predictions_h{h}.parquet<br>
-      ae_var_diff/ ae_var_diff_predictions_h{h}.parquet<br>
-      lstm/        lstm_predictions_h{h}.parquet<br>
-      ae_lstm/     ae_lstm_predictions_h{h}.parquet<br>
-
-  Each file is a DataFrame indexed by Date with 30 columns (`SVENY01`…`SVENY30`).
-
----
-
-## How to run (sketch)
-
-1) **Prepare data** (fetch + refit NS → build `spots.parquet`):
-
-       python src/01_fetch_clean.py
-       python src/02_fit_ns.py    # refits NS daily; writes data/processed/spots.parquet
-
-2) **Configure**:
-
-       # edit configs/base.yaml (seed, horizons, window, etc.)
-       # edit configs/model/dns_diff.yaml (best per-horizon DNS settings)
-
-3) **Train / backtest** (each script writes parquet predictions as above):
-
-       python src/03_models/dns_diff_backtest.py
-       python src/03_models/ae_var_diff_backtest.py
-       python src/03_models/lstm_backtest.py
-       python src/03_models/ae_lstm_backtest.py
-
-4) **Evaluate & plot**:
-
-       python src/ycml/eval/plot_rmse_by_maturity.py
-       python src/ycml/eval/summarize_rmse_and_dm.py
-
-   Outputs go to `outputs/figures/*.png` and `outputs/tables/*.csv`.
-
----
-
-## Notes & limitations
-
-- Daily horizons are **very persistent**; the RW’s strength is expected.  
-- Per-window **standardization** and **rolling refresh** keep training numerically stable and the evaluation fair.
-- The **AE loss reweighting** (by $\sigma^2$ per maturity) ensures fairness across maturities in original units.
-- Results are **sample- and design-dependent**: other frequencies, macro covariates, or different loss weighting may change outcomes. The code is organized to make such extensions straightforward.
-
----
-
-## TL;DR
-
-Under identical rolling backtests from 1960→present, **Random Walk** is the best forecaster for daily US yield curves at **1/5/10/22-day** horizons. Among learned models, **DNS-diff** (factor VAR on differenced NS factors) is best, followed by **AE+VAR**, then **LSTM**, then **AE+LSTM**. The empirical message is simple and important: **more complex isn’t automatically better**; for persistent financial series, **strong classical baselines set a high bar**.
+Under identical rolling backtests from 1960→present, *Random Walk* is the best forecaster for daily US yield curves at 1/5/10/22-day horizons. Among learned models, *DNS-diff* (factor VAR on differenced NS factors) is best, followed by *AE+VAR*, then *LSTM*, then *AE+LSTM*. The empirical message is simple and important: **more complex isn’t automatically better**; for persistent financial series, **strong classical baselines set a high bar**.
 
 ---
