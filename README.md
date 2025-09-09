@@ -58,7 +58,7 @@ The benchmark: $\hat{Y}_{t+h} = Y_t$. Extremely hard to beat for daily horizons 
 ### 4) LSTM (sequence → multi-horizon)
 - **Inputs:** Last $L = 504$ daily curves ($30$ dims each).  
 - **Model:** 1-layer LSTM (hidden_dim=128). The last hidden state feeds a linear head that outputs all horizons at once (shape $H\times 30$).  
-- **Training:** Standardize with train-window stats; loss is **original-scale MSE per maturity**.  
+- **Training:** Standardize with train-window stats; loss is original-scale MSE per maturity.  
 - **Periodic refresh:** Train on trailing $5,000$ days, re-train every 252 days.
 
 ### 5) AE+LSTM (codes → LSTM → decode)
