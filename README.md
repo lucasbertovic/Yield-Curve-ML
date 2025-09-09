@@ -4,7 +4,7 @@
 
 > Compare *Random Walk*, *Dynamic Nelson–Siegel (DNS)*, *Autoencoder (AE)+VAR*, *LSTM*, and *AE+LSTM*.  
 
-> **Result:** the Random Walk baseline is the best; among learned models **DNS-diff > AE+VAR > LSTM > AE+LSTM**. Gaps narrow with horizon but the ordering is stable.
+> **Result:** the Random Walk baseline is the best; among learned models *DNS-diff > AE+VAR > LSTM > AE+LSTM*. Gaps narrow with horizon but the ordering is stable.
 
 ---
 
@@ -16,15 +16,14 @@ Yield curves are smooth, persistent time series. A natural question is whether m
 
 ## Data & preprocessing
 
-- **Source:** Federal Reserve nominal yield curve (daily), 1960 → present.  
-  Early period uses **Nelson–Siegel** parameters; later period uses **Svensson**.
-- **Unification:** For *every day* we **re-fit Nelson–Siegel (NS)** to the observed curve and rebuild a **30×1–30y** panel of yields:
+- **Source:** Federal Reserve nominal yield curve (daily), 1960 → present. Early period uses Nelson–Siegel parameters; later period uses Svensson.
+- **Unification:** For *every day* we re-fit Nelson–Siegel (NS) to the observed curve and rebuild a 30×1–30y panel of yields:
   
   $y_t(\tau) \approx \beta_{1,t}   \;+\; \beta_{2,t}\,\frac{1-e^{-\lambda \tau}}{\lambda \tau}   \;+\; \beta_{3,t}\Big(\frac{1-e^{-\lambda \tau}}{\lambda \tau} - e^{-\lambda \tau}\Big).$
   
   This yields a consistent daily panel $Y_t \in \mathbb{R}^{30}$ for maturities $\tau \in \{1,\dots,30\}$ years.
 
-- **Task:** For each day $t$, forecast the entire 30-dim curve at **horizons** $h\in\{1,5,10,22\}$ (business days ahead).
+- **Task:** For each day $t$, forecast the entire 30-dim curve at horizons $h\in\{1,5,10,22\}$ (business days ahead).
 
 ---
 
@@ -34,8 +33,8 @@ Yield curves are smooth, persistent time series. A natural question is whether m
 The benchmark: $\hat{Y}_{t+h} = Y_t$. Extremely hard to beat for daily horizons due to strong persistence.
 
 ### 2) Dynamic Nelson–Siegel (DNS-diff)
-- **Factor extraction:** Solve $Y_t \approx F(\lambda)\,\beta_t$ to get **LEVEL**, **SLOPE**, **CURV**: $\beta_t \in \mathbb{R}^3$.
-- **Dynamics:** Fit a **rolling VAR(p)** on **first differences** $\Delta \beta_t = \beta_t - \beta_{t-1}$ (per-window z-scored for numerics):
+- **Factor extraction:** Solve $Y_t \approx F(\lambda)\,\beta_t$ to get LEVEL, SLOPE**, CURV: $\beta_t \in \mathbb{R}^3$.
+- **Dynamics:** Fit a rolling VAR(p) on *first differences* $\Delta \beta_t = \beta_t - \beta_{t-1}$ (per-window z-scored for numerics):
   
   $\Delta \beta_t = c + A_1 \Delta \beta_{t-1} + \cdots + A_p \Delta \beta_{t-p} + \varepsilon_t.$
   
@@ -50,17 +49,17 @@ The benchmark: $\hat{Y}_{t+h} = Y_t$. Extremely hard to beat for daily horizons 
 | VAR Order         | 1         | 1         | 1          | 1          |
 
 ### 3) Autoencoder + VAR on latent differences (AE+VAR)
-- **Autoencoder:** Learn a **3-dim** latent code $z_t \in \mathbb{R}^3$ from $Y_t\in\mathbb{R}^{30}$.  
-  Training uses standardized inputs but **reweights loss by $\sigma^2$ per maturity**, making the objective equal to **original-scale MSE** (equal across maturities).
-- **Dynamics:** Run the **DNS pipeline on $z_t$**: fit VAR(p) on **$\Delta z_t$** (z-scored per window), forecast a path of $\Delta z$, unstandardize + accumulate to $z_{t+h}$, then **decode** to yields.
+- **Autoencoder:** Learn a 3-dim latent code $z_t \in \mathbb{R}^3$ from $Y_t\in\mathbb{R}^{30}$.  
+  Training uses standardized inputs but reweights loss by $\sigma^2$ per maturity, making the objective equal to original-scale MSE (equal across maturities).
+- **Dynamics:** Run the DNS pipeline on $z_t$: fit VAR(p) on $\Delta z_t$ (z-scored per window), forecast a path of $\Delta z$, unstandardize + accumulate to $z_{t+h}$, then decode to yields.
 
-- **Refresh/backtest:** Retrain AE on a trailing **5000** days, **refresh every 252** days; VAR window e.g. **504**.
+- **Refresh/backtest:** Retrain AE on a trailing $5,000$ days, *refresh every 252* days; VAR window = $504$ days.
 
 ### 4) LSTM (sequence → multi-horizon)
-- **Inputs:** Last **L = 504** daily curves $(30$ dims each).  
-- **Model:** 1-layer LSTM (hidden_dim=128). The last hidden state feeds a linear head that outputs **all horizons at once** (shape $H\times 30$).  
+- **Inputs:** Last $L = 504$ daily curves ($30$ dims each).  
+- **Model:** 1-layer LSTM (hidden_dim=128). The last hidden state feeds a linear head that outputs all horizons at once (shape $H\times 30$).  
 - **Training:** Standardize with train-window stats; loss is **original-scale MSE per maturity**.  
-- **Periodic refresh:** Train on trailing **5000** days, re-train **every 252** days.
+- **Periodic refresh:** Train on trailing $5,000$ days, re-train every 252 days.
 
 ### 5) AE+LSTM (codes → LSTM → decode)
 Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ to the LSTM, and decode forecasts back to yields.
@@ -69,28 +68,35 @@ Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ t
 
 ## Backtesting protocol (common to all learned models)
 
-- **Rolling / expanding windows:** All models use identical trailing windows for estimation and **refresh every 252** days.
-- **Standardization:** Always fit scalers on the **train slice only**; apply to validation/forecast slices.
-- **Multi-horizon evaluation:** Forecast the entire curve for **h ∈ {1,5,10,22}**.
+- **Rolling / expanding windows:** All models use identical trailing windows for estimation and refresh every 252 days.
+- **Standardization:** Fit scalers on the train slice only; apply to validation/forecast slices.
+- **Multi-horizon evaluation:** Forecast the entire curve for h ∈ {1,5,10,22}.
 - **Metrics:**  
-  - Primary: **RMSE by maturity** (bps) and **RMSE table (model × horizon)** on **aligned dates** across models.  
-  - **Diebold–Mariano** tests on **per-date unweighted MSE** to assess significance for selected pairs.
+  - RMSE by maturity (bps) and RMSE table (model × horizon) on *aligned dates* across models.  
+  - Diebold–Mariano tests on per-date unweighted MSE to assess significance for selected pairs.
 
 ---
 
-## Key findings (concise)
+## Key findings 
 
 - **Random Walk is the winner** at all horizons (DM vs every model: p ≪ 0.001).
 - Among non-RW models the ranking is stable:  
-  **DNS-diff  >  AE+VAR  >  LSTM  >  AE+LSTM**  
+  *DNS-diff  >  AE+VAR  >  LSTM  >  AE+LSTM* 
   (all pairwise differences above are statistically significant; magnitudes shrink with horizon).
-- **Interpretation:** For daily horizons, yield curves are so persistent that **simple persistence + linear factor dynamics** remain hard to beat; **more complex models** (deep sequence models and learned factors) **do not outperform** under the same rolling, out-of-sample protocol.
+- **Interpretation:** For daily horizons, yield curves are so persistent that simple persistence + linear factor dynamics remain hard to beat; more complex models (deep sequence models and learned factors) **do not outperform** under the same rolling, out-of-sample protocol.
 
 > *This aligns with the literature’s recurring theme: complexity doesn’t guarantee better forecasts for highly persistent financial time series unless it adds genuine predictive signal and is matched with careful evaluation design.*
 
----
+**RMSE (bps, unweighted)** —  computed on the common intersection of dates for each model across four forecast horizons..  
 
-## Figures
+
+| Model     | h=1   | h=5   | h=10  | h=22  |
+|-----------|-------|-------|-------|-------|
+| RW        | 6.57  | 15.00 | 20.95 | 31.61 |
+| DNS-diff  | 10.78 | 17.21 | 22.70 | 33.78 |
+| AE+VAR    | 14.23 | 19.51 | 24.50 | 34.91 |
+| LSTM      | 23.33 | 26.91 | 31.54 | 41.64 |
+| AE+LSTM   | 30.99 | 34.24 | 38.22 | 48.32 |
 
 <div align="center">
 
@@ -109,23 +115,6 @@ Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ t
 
 </div>
 
----
-
-## Tables 
-
-- **Table A. RMSE (bps, unweighted)** — models (rows) × horizons (columns), computed on the **common intersection of dates per horizon**.  
-
-
-| Model     | h=1   | h=5   | h=10  | h=22  |
-|-----------|-------|-------|-------|-------|
-| RW        | 6.57  | 15.00 | 20.95 | 31.61 |
-| DNS-diff  | 10.78 | 17.21 | 22.70 | 33.78 |
-| AE+VAR    | 14.23 | 19.51 | 24.50 | 34.91 |
-| LSTM      | 23.33 | 26.91 | 31.54 | 41.64 |
-| AE+LSTM   | 30.99 | 34.24 | 38.22 | 48.32 |
-| N_common  | 10951 | 10951 | 10951 | 10951 |
-
-**Table A.** Root Mean Squared Error (bps, unweighted) for each model across four forecast horizons.  
 
 - **Table B. Diebold–Mariano tests (selected pairs)** — DM statistic, p-value, sample size $N$.  
   Pairs included: each model vs **RW**, plus **DNS-diff vs AE+VAR**, **LSTM vs AE+VAR**, **AE+LSTM vs LSTM**.  
