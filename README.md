@@ -35,7 +35,7 @@ The benchmark: $\hat{Y}_{t+h} = Y_t$. Extremely hard to beat for daily horizons 
 - **Factor extraction:** Solve $Y_t \approx F(\lambda)\,\beta_t$ to get **LEVEL**, **SLOPE**, **CURV**: $\beta_t \in \mathbb{R}^3$.
 - **Dynamics:** Fit a **rolling VAR(p)** on **first differences** $\Delta \beta_t = \beta_t - \beta_{t-1}$ (per-window z-scored for numerics):
   
-  $ \Delta \beta_t = c + A_1 \Delta \beta_{t-1} + \cdots + A_p \Delta \beta_{t-p} + \varepsilon_t. $
+  $\Delta \beta_t = c + A_1 \Delta \beta_{t-1} + \cdots + A_p \Delta \beta_{t-p} + \varepsilon_t.$
   
   Forecast $\Delta \beta_{t+1}, \ldots, \Delta \beta_{t+h}$, accumulate to $\beta_{t+h}$, then decode to yields.
 
@@ -43,7 +43,7 @@ The benchmark: $\hat{Y}_{t+h} = Y_t$. Extremely hard to beat for daily horizons 
 
 | Parameter         | $h = 1$   | $h = 5$   | $h = 10$   | $h = 22$   |
 |-------------------|-----------|-----------|------------|------------|
-| $ \lambda $       | 0.25      | 0.25      | 0.50       | 0.80       |
+| $\lambda$         | 0.25      | 0.25      | 0.50       | 0.80       |
 | Rolling Window    | 504       | 756       | 756        | 756        |
 | VAR Order         | 1         | 1         | 1          | 1          |
 
@@ -139,11 +139,11 @@ Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ t
   - `configs/model/dns_diff.yaml` — horizon-specific **best DNS** hyperparameters (λ, window, VAR order).
 
 - **Saved predictions (per horizon):**
-    data/processed/predictions/
-      dns_diff/    dns_diff_predictions_h{h}.parquet
-      ae_var_diff/ ae_var_diff_predictions_h{h}.parquet
-      lstm/        lstm_predictions_h{h}.parquet
-      ae_lstm/     ae_lstm_predictions_h{h}.parquet
+    data/processed/predictions/<br>
+      dns_diff/    dns_diff_predictions_h{h}.parquet<br>
+      ae_var_diff/ ae_var_diff_predictions_h{h}.parquet<br>
+      lstm/        lstm_predictions_h{h}.parquet<br>
+      ae_lstm/     ae_lstm_predictions_h{h}.parquet<br>
 
   Each file is a DataFrame indexed by Date with 30 columns (`SVENY01`…`SVENY30`).
 
