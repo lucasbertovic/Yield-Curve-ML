@@ -1,0 +1,17 @@
+best_dns_configs:
+  1:
+    lam: 0.25
+    window: 504
+    order: 1
+  5:
+    lam: 0.25
+    window: 756
+    order: 1
+  10:
+    lam: 0.5
+    window: 756
+    order: 1
+  22:
+    lam: 0.8
+    window: 756
+    order: 1

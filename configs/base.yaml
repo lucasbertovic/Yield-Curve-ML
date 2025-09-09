@@ -1,0 +1,47 @@
+seed: 1337
+
+curve:
+  maturities: 30                 # number of columns (SVENY01..SVENY30)
+  mat_grid: [1, 30]   # OR omit to auto-build 1..30 in code
+  lambda: 1.37                   # DNS lambda
+  y_col_prefix: "SVENY"          # column naming convention
+  y_col_zero_pad: 2              # e.g., 01, 02, ..., 30
+
+backtest:
+  window: 504                    # rolling window length
+  horizons: [1, 5, 10, 22]       # evaluation horizons
+
+weights:
+  SVENY01: 1
+  SVENY02: 2
+  SVENY03: 3
+  SVENY04: 4
+  SVENY05: 5
+  SVENY06: 6
+  SVENY07: 7
+  SVENY08: 8
+  SVENY09: 9
+  SVENY10: 10
+  SVENY11: 11
+  SVENY12: 12
+  SVENY13: 13
+  SVENY14: 14
+  SVENY15: 15
+  SVENY16: 16
+  SVENY17: 17
+  SVENY18: 18
+  SVENY19: 19
+  SVENY20: 20
+  SVENY21: 21
+  SVENY22: 22
+  SVENY23: 23
+  SVENY24: 24
+  SVENY25: 25
+  SVENY26: 26
+  SVENY27: 27
+  SVENY28: 28
+  SVENY29: 29
+  SVENY30: 30
+
+
+
