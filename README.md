@@ -1,7 +1,9 @@
 # Yield Curve Forecasting with Machine Learning (vs. Classic Factor Models)
 
 > Daily US nominal yield curve (1960–present). Forecast 30 maturities at horizons **h ∈ {1, 5, 10, 22}**.  
+
 > Compare **Random Walk**, **Dynamic Nelson–Siegel (DNS)**, **Autoencoder+VAR**, **LSTM**, and **AE+LSTM**.  
+
 > **Result:** the **Random Walk** baseline is the best; among learned models **DNS-diff > AE+VAR > LSTM > AE+LSTM**. Gaps narrow with horizon but the ordering is stable.
 
 ---
@@ -109,7 +111,7 @@ Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ t
 
 ---
 
-## Tables (placeholders)
+## Tables 
 
 - **Table A. RMSE (bps, unweighted)** — models (rows) × horizons (columns), computed on the **common intersection of dates per horizon**.  
 
@@ -136,7 +138,7 @@ Encode each day to $z_t\in\mathbb{R}^3$ with the AE, feed the sequence $\{z\}$ t
 - **Configuration files:**
   - `configs/base.yaml` — seeds, horizons, window (seq_len), mat_grid spec, etc.  
     Also supports loading per-maturity plotting weights if needed.
-  - `configs/model/dns_diff.yaml` — horizon-specific **best DNS** hyperparameters (λ, window, VAR order).
+  - `configs/model/dns_diff.yaml` — horizon-specific best DNS hyperparameters (λ, window, VAR order).
 
 - **Saved predictions (per horizon):**
     data/processed/predictions/<br>
