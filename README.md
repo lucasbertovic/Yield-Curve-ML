@@ -1,16 +1,16 @@
 # Yield Curve Forecasting with Machine Learning (vs. Classic Factor Models)
 
-> Daily US nominal yield curve (1960–present). Forecast 30 maturities at horizons **h ∈ {1, 5, 10, 22}**.  
+> Daily US nominal yield curve (1960–present). Forecast 30 maturities at horizons h ∈ {1, 5, 10, 22}.  
 
-> Compare **Random Walk**, **Dynamic Nelson–Siegel (DNS)**, **Autoencoder+VAR**, **LSTM**, and **AE+LSTM**.  
+> Compare *Random Walk*, *Dynamic Nelson–Siegel (DNS)*, *Autoencoder (AE)+VAR*, *LSTM*, and *AE+LSTM*.  
 
-> **Result:** the **Random Walk** baseline is the best; among learned models **DNS-diff > AE+VAR > LSTM > AE+LSTM**. Gaps narrow with horizon but the ordering is stable.
+> **Result:** the Random Walk baseline is the best; among learned models **DNS-diff > AE+VAR > LSTM > AE+LSTM**. Gaps narrow with horizon but the ordering is stable.
 
 ---
 
 ## Why this project?
 
-Yield curves are smooth, persistent time series. A natural question is whether modern ML (deep sequence models, learned latent factors) can **beat simple, strong baselines** and classic factor models **out of sample** when evaluated rigorously. This repo implements a clean, reproducible comparison across methods with identical rolling backtests and robust statistics (Diebold–Mariano tests).
+Yield curves are smooth, persistent time series. A natural question is whether modern ML (deep sequence models, learned latent factors) can beat simple, strong baselines and classic factor models out of sample when evaluated rigorously. This repo implements a clean, reproducible comparison across methods with identical rolling backtests and robust statistics (Diebold–Mariano tests).
 
 ---
 
